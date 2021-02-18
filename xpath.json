@@ -1,0 +1,9 @@
+{
+    "usernameInput": "/html/body/app-root/app-logged-out-shell/app-login-page/fl-container/fl-bit/app-login/app-credentials-form/form/fl-input[1]/fl-bit/fl-bit/input",
+    "passwordInput": "/html/body/app-root/app-logged-out-shell/app-login-page/fl-container/fl-bit/app-login/app-credentials-form/form/fl-input[2]/fl-bit/fl-bit/input",
+    "loginButtonInput": "/html/body/app-root/app-logged-out-shell/app-login-page/fl-container/fl-bit/app-login/app-credentials-form/form/app-login-signup-button/fl-button/button",
+    "bidAmountInput": "/html/body/app-root/app-logged-in-shell/div/div[2]/ng-component/app-project-view-details/fl-page-layout/main/fl-container/fl-page-layout-single/fl-grid/fl-col[1]/app-project-details-freelancer/app-bid-form/fl-card/fl-bit/fl-bit[2]/fl-bit[1]/fl-bit/fl-bit[1]/fl-input/fl-bit/fl-bit[2]/input",
+    "projectDeliveryInput": "/html/body/app-root/app-logged-in-shell/div/div[2]/ng-component/app-project-view-details/fl-page-layout/main/fl-container/fl-page-layout-single/fl-grid/fl-col[1]/app-project-details-freelancer/app-bid-form/fl-card/fl-bit/fl-bit[2]/fl-bit[1]/fl-bit/fl-bit[2]/fl-input/fl-bit/fl-bit[1]/input",
+    "projectDescriptionInput": "/html/body/app-root/app-logged-in-shell/div/div[2]/ng-component/app-project-view-details/fl-page-layout/main/fl-container/fl-page-layout-single/fl-grid/fl-col[1]/app-project-details-freelancer/app-bid-form/fl-card/fl-bit/fl-bit[2]/fl-bit[1]/fl-textarea/textarea",
+    "bidButtonInput": "/html/body/app-root/app-logged-in-shell/div/div[2]/ng-component/app-project-view-details/fl-page-layout/main/fl-container/fl-page-layout-single/fl-grid/fl-col[1]/app-project-details-freelancer/app-bid-form/fl-card/fl-bit/fl-bit[2]/fl-bit[2]/fl-button/button"
+}
