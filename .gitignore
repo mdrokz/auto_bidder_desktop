@@ -44,3 +44,8 @@ app.*.map.json
 /android/app/debug
 /android/app/profile
 /android/app/release
+
+# misc
+example.h
+generated_bindings.dart
+libnotification.so.1.0.0

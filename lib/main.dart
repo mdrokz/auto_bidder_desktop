@@ -1,13 +1,18 @@
+import 'dart:async';
 import 'dart:convert';
 import 'dart:io';
 import 'dart:ui';
+import 'dart:ffi';
 
 import 'package:auto_bidder/drawer.dart';
+import 'package:ffi/ffi.dart';
 import 'package:flutter/material.dart';
 import 'package:grpc/grpc.dart';
 import 'package:auto_bidder/grpc/main.pb.dart';
 import 'package:auto_bidder/grpc/main.pbgrpc.dart';
 import 'package:auto_bidder/channel.dart';
+
+import 'notification.dart' as N;
 
 void main() {
   runApp(MyApp());
@@ -61,25 +66,60 @@ class LoginCred {
 
 class _LoginPageState extends State<LoginPage> {
   Channel<AuthClient> authStub;
+  // Channel<BidClient> bidStub;
+  Channel<ProjectClient> projectStub;
+  Map<String, String> xpathInfo = new Map();
+  List<Projects> projects = [];
+  StreamSubscription<Projects> projectListener;
   LoginCred loginCred = LoginCred();
   bool isAuthenticate = false;
   TextStyle style = TextStyle(fontFamily: 'Montserrat', fontSize: 20.0);
-  // Projects projects;
 
   Future<void> init() async {
-    var channel =
+    var authChannel =
         Channel<AuthClient>(AuthClient(Channel.getClientChannel(50053)), null);
 
+    var projectChannel = Channel<ProjectClient>(
+        ProjectClient(Channel.getClientChannel(50052)), null);
+
+    var xpathJson = jsonDecode(await File("./xpath.json").readAsString());
+
     setState(() {
-      authStub = channel;
+      xpathInfo["bidAmountInput"] = xpathJson["bidAmountInput"];
+      xpathInfo["projectDeliveryInput"] = xpathJson["projectDeliveryInput"];
+      xpathInfo["projectDescriptionInput"] =
+          xpathJson["projectDescriptionInput"];
+      xpathInfo["bidButtonInput"] = xpathJson["bidButtonInput"];
+      xpathInfo["usernameInput"] = xpathJson["usernameInput"];
+      xpathInfo["passwordInput"] = xpathJson["passwordInput"];
+      xpathInfo["buttonInput"] = xpathJson["loginButtonInput"];
     });
 
-    final status = (await channel.service
-            .checkStatus(AuthEmpty(), options: channel.callOptions))
-        .isCookie;
     setState(() {
+      authChannel = authChannel;
+      projectStub = projectChannel;
+    });
+
+    final status = (await authChannel.service
+            .checkStatus(AuthEmpty(), options: authChannel.callOptions))
+        .isCookie;
+
+    var p = await projectChannel.service
+        .getProjects(
+            ProjectPathInfo(
+                bidAmountPath: xpathInfo["bidAmountInput"],
+                projectDeliveryPath: xpathInfo["projectDeliveryInput"],
+                projectDescriptionPath: xpathInfo["projectDescriptionInput"],
+                bidButtonPath: xpathInfo["bidButtonInput"]),
+            options: projectChannel.callOptions)
+        .toList();
+
+    setState(() {
+      projects = p;
       isAuthenticate = status;
     });
+
+    subscribeToProject();
   }
 
   Future<bool> getAuthenticationStatus() async {
@@ -92,6 +132,42 @@ class _LoginPageState extends State<LoginPage> {
   initState() {
     super.initState();
     init();
+  }
+
+  void subscribeToProject() {
+    projectListener = projectStub.service
+        .subscribeToProject(ProjectEmpty(), options: projectStub.callOptions)
+        .listen((value) {
+      setState(() {
+        projects.insert(0, value);
+      });
+    });
+  }
+
+  @override
+  dispose() async {
+    Future.delayed(Duration.zero, () async {
+      await projectListener.cancel();
+    });
+    super.dispose();
+  }
+
+  void bidOnProject(String url) {
+    var status = projectStub.service.bidOnProject(
+        ProjectInfo(
+          link: url,
+          bidAmount: "",
+          projectDelivery: "",
+          projectDescription:
+              "Hello i am a full stack developer with 5+ years of experience in Web Development and i have experience in MERN and MEAN Stack, i will be able to accomplish your task.",
+          bidAmountPath: xpathInfo["bidAmountInput"],
+          projectDeliveryPath: xpathInfo["projectDeliveryInput"],
+          projectDescriptionPath: xpathInfo["projectDescriptionInput"],
+          bidButtonPath: xpathInfo["bidButtonInput"],
+        ),
+        options: projectStub.callOptions);
+
+    print(status);
   }
 
   Widget usernameField() {
@@ -138,14 +214,32 @@ class _LoginPageState extends State<LoginPage> {
         padding: EdgeInsets.fromLTRB(20.0, 15.0, 20.0, 15.0),
         onPressed: () async {
           var xpath = jsonDecode(await File("./xpath.json").readAsString());
-          authStub.service.authenticate(
-              AuthCredentials(
-                  username: loginCred.username,
-                  password: loginCred.password,
-                  usernameInput: xpath["usernameInput"],
-                  passwordInput: xpath["passwordInput"],
-                  buttonInput: xpath["loginButtonInput"]),
-              options: authStub.callOptions);
+          try {
+            authStub.service.authenticate(
+                AuthCredentials(
+                    username: loginCred.username,
+                    password: loginCred.password,
+                    usernameInput: xpathInfo["usernameInput"],
+                    passwordInput: xpathInfo["passwordInput"],
+                    buttonInput: xpathInfo["loginButtonInput"]),
+                options: authStub.callOptions);
+            var p = await projectStub.service
+                .getProjects(
+                    ProjectPathInfo(
+                        bidAmountPath: xpathInfo["bidAmountInput"],
+                        projectDeliveryPath: xpathInfo["projectDeliveryInput"],
+                        projectDescriptionPath:
+                            xpathInfo["projectDescriptionInput"],
+                        bidButtonPath: xpathInfo["bidButtonInput"]),
+                    options: projectStub.callOptions)
+                .toList();
+            setState(() {
+              projects = p;
+              isAuthenticate = true;
+            });
+          } catch (e) {
+            print("login failed");
+          }
         },
         child: Text("Login",
             textAlign: TextAlign.center,
@@ -155,183 +249,9 @@ class _LoginPageState extends State<LoginPage> {
     );
   }
 
-  List<Widget> loginForm() {
+  Widget loginForm() {
     if (isAuthenticate) {
-      Navigator.push(
-          context,
-          MaterialPageRoute(
-              builder: (context) => HomePage(
-                    title: widget.title,
-                  )));
-
-      return [];
-    } else {
-      return ([
-        usernameField(),
-        SizedBox(height: 25.0),
-        passwordField(),
-        SizedBox(height: 35.0),
-        loginButton(),
-        SizedBox(height: 15.0),
-      ]);
-    }
-  }
-
-  @override
-  Widget build(BuildContext context) {
-    // This method is rerun every time setState is called, for instance as done
-    // by the _incrementCounter method above.
-    //
-    // The Flutter framework has been optimized to make rerunning build methods
-    // fast, so that you can just rebuild anything that needs updating rather
-    // than having to individually change instances of widgets.
-    return Scaffold(
-        appBar: AppBar(
-          // Here we take the value from the MyHomePage object that was created by
-          // the App.build method, and use it to set our appbar title.
-          title: Text(widget.title),
-          centerTitle: true,
-          //leading: ,
-        ),
-        body: Center(
-            child: Container(
-          color: Colors.white,
-          child: Padding(
-            padding: const EdgeInsets.all(36.0),
-            child: Column(
-              children: loginForm(),
-              crossAxisAlignment: CrossAxisAlignment.center,
-              mainAxisAlignment: MainAxisAlignment.center,
-            ),
-          ),
-        )),
-        drawer: CustomDrawer());
-  }
-}
-
-class HomePage extends StatefulWidget {
-  HomePage({Key key, this.title}) : super(key: key);
-
-  // This widget is the home page of your application. It is stateful, meaning
-  // that it has a State object (defined below) that contains fields that affect
-  // how it looks.
-
-  // This class is the configuration for the state. It holds the values (in this
-  // case the title) provided by the parent (in this case the App widget) and
-  // used by the build method of the State. Fields in a Widget subclass are
-  // always marked "final".
-
-  final String title;
-
-  @override
-  _HomePageState createState() => _HomePageState();
-}
-
-class _HomePageState extends State<HomePage> {
-  Channel<BidClient> bidStub;
-  Channel<ProjectClient> projectStub;
-  Map<String, String> xpathInfo = new Map();
-  List<Projects> projects = [];
-  int _counter = 0;
-
-  void _incrementCounter() {
-    setState(() {
-      // This call to setState tells the Flutter framework that something has
-      // changed in this State, which causes it to rerun the build method below
-      // so that the display can reflect the updated values. If we changed
-      // _counter without calling setState(), then the build method would not be
-      // called again, and so nothing would appear to happen.
-      _counter++;
-    });
-  }
-
-  Future<void> init() async {
-    var file = File("./xpath.json");
-
-    var xpathJson = jsonDecode(await file.readAsString());
-
-    setState(() {
-      xpathInfo["bidAmountInput"] = xpathJson["bidAmountInput"];
-      xpathInfo["projectDeliveryInput"] = xpathJson["projectDeliveryInput"];
-      xpathInfo["projectDescriptionInput"] =
-          xpathJson["projectDescriptionInput"];
-      xpathInfo["bidButtonInput"] = xpathJson["bidButtonInput"];
-    });
-
-    setState(() {
-      bidStub =
-          Channel<BidClient>(BidClient(Channel.getClientChannel(50051)), null);
-      projectStub = Channel<ProjectClient>(
-          ProjectClient(Channel.getClientChannel(50052)), null);
-    });
-    file = null;
-    getProjects();
-  }
-
-  Future<void> getProjects() async {
-    try {
-      var projectStream = projectStub.service
-          .getProjects(ProjectEmpty(), options: projectStub.callOptions);
-
-      var p = await projectStream.toList();
-      setState(() {
-        projects = p;
-      });
-
-      // subscribeToProject();
-    } catch (e) {
-      print(e);
-    }
-  }
-
-  void subscribeToProject() {
-    var projectListener = projectStub.service
-        .subscribeToProject(ProjectEmpty(), options: projectStub.callOptions)
-        .listen((value) {
-      print(value);
-      setState(() {
-        projects.insert(0, value);
-      });
-    });
-  }
-
-  void bidOnProject(String url) {
-    var status = projectStub.service.bidOnProject(
-        ProjectInfo(
-          link: url,
-          bidAmount: "",
-          projectDelivery: "",
-          projectDescription:
-              "Hello i am a full stack developer with 5+ years of experience in Web Development and i have experience in MERN and MEAN Stack, i will be able to accomplish your task.",
-          bidAmountPath: xpathInfo["bidAmountInput"],
-          projectDeliveryPath: xpathInfo["projectDeliveryInput"],
-          projectDescriptionPath: xpathInfo["projectDescriptionInput"],
-          bidButtonPath: xpathInfo["bidButtonInput"],
-        ),
-        options: projectStub.callOptions);
-
-    print(status);
-  }
-
-  @override
-  void initState() {
-    // TODO: implement initState
-    super.initState();
-    init();
-  }
-
-  @override
-  Widget build(BuildContext context) {
-    // TODO: implement build
-    return Scaffold(
-      appBar: AppBar(
-        // Here we take the value from the MyHomePage object that was created by
-        // the App.build method, and use it to set our appbar title.
-        title: Text(widget.title),
-        centerTitle: true,
-        // leading: ,
-      ),
-      body: projects.length > 0
+      return projects.length > 0
           ? new ListView.builder(
               padding: const EdgeInsets.all(10.0),
               itemCount: projects.length,
@@ -352,17 +272,92 @@ class _HomePageState extends State<HomePage> {
                       padding: EdgeInsets.fromLTRB(30.0, 15.0, 20.0, 15.0),
                     ),
                   ),
+                  onTap: () async {
+                    await showDialog(
+                        context: context,
+                        builder: (buildContext) {
+                          return AlertDialog(
+                            title: Text(projects[i].title),
+                            content: Container(
+                                width: 400.0,
+                                height: 400.0,
+                                child: ListView(
+                                  shrinkWrap: true,
+                                  children: [
+                                    Text("Description: " +
+                                        projects[i].description),
+                                    Padding(padding: EdgeInsets.all(20)),
+                                    Text("Price: " +
+                                        projects[i].currency +
+                                        " " +
+                                        projects[i].biddingPrice),
+                                    Padding(padding: EdgeInsets.all(15)),
+                                    Text("Skills: " + projects[i].skills),
+                                    Padding(padding: EdgeInsets.all(15)),
+                                    Text("Link: " + projects[i].link),
+                                  ],
+                                )),
+                            actions: <Widget>[
+                              TextButton(
+                                child: Text('Close'),
+                                onPressed: () {
+                                  Navigator.of(context).pop();
+                                },
+                              ),
+                              TextButton(
+                                child: Text('Bid'),
+                                onPressed: () => bidOnProject(projects[i].link),
+                              )
+                            ],
+                          );
+                        });
+                  },
                   title: Text(projects[i].title),
                 );
               })
           : Center(
               child: CircularProgressIndicator(),
-            ),
-      floatingActionButton: FloatingActionButton(
-        onPressed: _incrementCounter,
-        tooltip: 'Increment',
-        child: Icon(Icons.add),
-      ), // This trailing comma makes auto-formatting nicer for build methods.
-    );
+            );
+    } else {
+      return Center(
+          child: Container(
+        color: Colors.white,
+        child: Padding(
+          padding: const EdgeInsets.all(36.0),
+          child: Column(
+            children: [
+              usernameField(),
+              SizedBox(height: 25.0),
+              passwordField(),
+              SizedBox(height: 35.0),
+              loginButton(),
+              SizedBox(height: 15.0),
+            ],
+            crossAxisAlignment: CrossAxisAlignment.center,
+            mainAxisAlignment: MainAxisAlignment.center,
+          ),
+        ),
+      ));
+    }
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    // This method is rerun every time setState is called, for instance as done
+    // by the _incrementCounter method above.
+    //
+    // The Flutter framework has been optimized to make rerunning build methods
+    // fast, so that you can just rebuild anything that needs updating rather
+    // than having to individually change instances of widgets.
+    return Scaffold(
+        appBar: AppBar(
+          // Here we take the value from the MyHomePage object that was created by
+          // the App.build method, and use it to set our appbar title.
+          title: Text(widget.title),
+          centerTitle: true,
+          //leading: ,
+        ),
+        body: loginForm(),
+        drawer: CustomDrawer());
   }
 }

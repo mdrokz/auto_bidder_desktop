@@ -53,10 +53,11 @@ abstract class BidServiceBase extends $grpc.Service {
 }
 
 class ProjectClient extends $grpc.Client {
-  static final _$getProjects = $grpc.ClientMethod<$0.ProjectEmpty, $0.Projects>(
-      '/auto_bidder_RPC.Project/getProjects',
-      ($0.ProjectEmpty value) => value.writeToBuffer(),
-      ($core.List<$core.int> value) => $0.Projects.fromBuffer(value));
+  static final _$getProjects =
+      $grpc.ClientMethod<$0.ProjectPathInfo, $0.Projects>(
+          '/auto_bidder_RPC.Project/getProjects',
+          ($0.ProjectPathInfo value) => value.writeToBuffer(),
+          ($core.List<$core.int> value) => $0.Projects.fromBuffer(value));
   static final _$bidOnProject =
       $grpc.ClientMethod<$0.ProjectInfo, $0.ProjectStatus>(
           '/auto_bidder_RPC.Project/bidOnProject',
@@ -73,7 +74,7 @@ class ProjectClient extends $grpc.Client {
       $core.Iterable<$grpc.ClientInterceptor>? interceptors})
       : super(channel, options: options, interceptors: interceptors);
 
-  $grpc.ResponseStream<$0.Projects> getProjects($0.ProjectEmpty request,
+  $grpc.ResponseStream<$0.Projects> getProjects($0.ProjectPathInfo request,
       {$grpc.CallOptions? options}) {
     return $createStreamingCall(
         _$getProjects, $async.Stream.fromIterable([request]),
@@ -97,12 +98,12 @@ abstract class ProjectServiceBase extends $grpc.Service {
   $core.String get $name => 'auto_bidder_RPC.Project';
 
   ProjectServiceBase() {
-    $addMethod($grpc.ServiceMethod<$0.ProjectEmpty, $0.Projects>(
+    $addMethod($grpc.ServiceMethod<$0.ProjectPathInfo, $0.Projects>(
         'getProjects',
         getProjects_Pre,
         false,
         true,
-        ($core.List<$core.int> value) => $0.ProjectEmpty.fromBuffer(value),
+        ($core.List<$core.int> value) => $0.ProjectPathInfo.fromBuffer(value),
         ($0.Projects value) => value.writeToBuffer()));
     $addMethod($grpc.ServiceMethod<$0.ProjectInfo, $0.ProjectStatus>(
         'bidOnProject',
@@ -120,8 +121,8 @@ abstract class ProjectServiceBase extends $grpc.Service {
         ($0.Projects value) => value.writeToBuffer()));
   }
 
-  $async.Stream<$0.Projects> getProjects_Pre(
-      $grpc.ServiceCall call, $async.Future<$0.ProjectEmpty> request) async* {
+  $async.Stream<$0.Projects> getProjects_Pre($grpc.ServiceCall call,
+      $async.Future<$0.ProjectPathInfo> request) async* {
     yield* getProjects(call, await request);
   }
 
@@ -136,7 +137,7 @@ abstract class ProjectServiceBase extends $grpc.Service {
   }
 
   $async.Stream<$0.Projects> getProjects(
-      $grpc.ServiceCall call, $0.ProjectEmpty request);
+      $grpc.ServiceCall call, $0.ProjectPathInfo request);
   $async.Future<$0.ProjectStatus> bidOnProject(
       $grpc.ServiceCall call, $0.ProjectInfo request);
   $async.Stream<$0.Projects> subscribeToProject(

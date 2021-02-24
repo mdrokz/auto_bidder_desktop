@@ -503,6 +503,95 @@ class ProjectInfo extends $pb.GeneratedMessage {
   void clearBidButtonPath() => clearField(8);
 }
 
+class ProjectPathInfo extends $pb.GeneratedMessage {
+  static final $pb.BuilderInfo _i = $pb.BuilderInfo(const $core.bool.fromEnvironment('protobuf.omit_message_names') ? '' : 'ProjectPathInfo', package: const $pb.PackageName(const $core.bool.fromEnvironment('protobuf.omit_message_names') ? '' : 'auto_bidder_RPC'), createEmptyInstance: create)
+    ..aOS(1, const $core.bool.fromEnvironment('protobuf.omit_field_names') ? '' : 'bidAmountPath', protoName: 'bidAmountPath')
+    ..aOS(2, const $core.bool.fromEnvironment('protobuf.omit_field_names') ? '' : 'projectDeliveryPath', protoName: 'projectDeliveryPath')
+    ..aOS(3, const $core.bool.fromEnvironment('protobuf.omit_field_names') ? '' : 'projectDescriptionPath', protoName: 'projectDescriptionPath')
+    ..aOS(4, const $core.bool.fromEnvironment('protobuf.omit_field_names') ? '' : 'bidButtonPath', protoName: 'bidButtonPath')
+    ..hasRequiredFields = false
+  ;
+
+  ProjectPathInfo._() : super();
+  factory ProjectPathInfo({
+    $core.String? bidAmountPath,
+    $core.String? projectDeliveryPath,
+    $core.String? projectDescriptionPath,
+    $core.String? bidButtonPath,
+  }) {
+    final _result = create();
+    if (bidAmountPath != null) {
+      _result.bidAmountPath = bidAmountPath;
+    }
+    if (projectDeliveryPath != null) {
+      _result.projectDeliveryPath = projectDeliveryPath;
+    }
+    if (projectDescriptionPath != null) {
+      _result.projectDescriptionPath = projectDescriptionPath;
+    }
+    if (bidButtonPath != null) {
+      _result.bidButtonPath = bidButtonPath;
+    }
+    return _result;
+  }
+  factory ProjectPathInfo.fromBuffer($core.List<$core.int> i, [$pb.ExtensionRegistry r = $pb.ExtensionRegistry.EMPTY]) => create()..mergeFromBuffer(i, r);
+  factory ProjectPathInfo.fromJson($core.String i, [$pb.ExtensionRegistry r = $pb.ExtensionRegistry.EMPTY]) => create()..mergeFromJson(i, r);
+  @$core.Deprecated(
+  'Using this can add significant overhead to your binary. '
+  'Use [GeneratedMessageGenericExtensions.deepCopy] instead. '
+  'Will be removed in next major version')
+  ProjectPathInfo clone() => ProjectPathInfo()..mergeFromMessage(this);
+  @$core.Deprecated(
+  'Using this can add significant overhead to your binary. '
+  'Use [GeneratedMessageGenericExtensions.rebuild] instead. '
+  'Will be removed in next major version')
+  ProjectPathInfo copyWith(void Function(ProjectPathInfo) updates) => super.copyWith((message) => updates(message as ProjectPathInfo)) as ProjectPathInfo; // ignore: deprecated_member_use
+  $pb.BuilderInfo get info_ => _i;
+  @$core.pragma('dart2js:noInline')
+  static ProjectPathInfo create() => ProjectPathInfo._();
+  ProjectPathInfo createEmptyInstance() => create();
+  static $pb.PbList<ProjectPathInfo> createRepeated() => $pb.PbList<ProjectPathInfo>();
+  @$core.pragma('dart2js:noInline')
+  static ProjectPathInfo getDefault() => _defaultInstance ??= $pb.GeneratedMessage.$_defaultFor<ProjectPathInfo>(create);
+  static ProjectPathInfo? _defaultInstance;
+
+  @$pb.TagNumber(1)
+  $core.String get bidAmountPath => $_getSZ(0);
+  @$pb.TagNumber(1)
+  set bidAmountPath($core.String v) { $_setString(0, v); }
+  @$pb.TagNumber(1)
+  $core.bool hasBidAmountPath() => $_has(0);
+  @$pb.TagNumber(1)
+  void clearBidAmountPath() => clearField(1);
+
+  @$pb.TagNumber(2)
+  $core.String get projectDeliveryPath => $_getSZ(1);
+  @$pb.TagNumber(2)
+  set projectDeliveryPath($core.String v) { $_setString(1, v); }
+  @$pb.TagNumber(2)
+  $core.bool hasProjectDeliveryPath() => $_has(1);
+  @$pb.TagNumber(2)
+  void clearProjectDeliveryPath() => clearField(2);
+
+  @$pb.TagNumber(3)
+  $core.String get projectDescriptionPath => $_getSZ(2);
+  @$pb.TagNumber(3)
+  set projectDescriptionPath($core.String v) { $_setString(2, v); }
+  @$pb.TagNumber(3)
+  $core.bool hasProjectDescriptionPath() => $_has(2);
+  @$pb.TagNumber(3)
+  void clearProjectDescriptionPath() => clearField(3);
+
+  @$pb.TagNumber(4)
+  $core.String get bidButtonPath => $_getSZ(3);
+  @$pb.TagNumber(4)
+  set bidButtonPath($core.String v) { $_setString(3, v); }
+  @$pb.TagNumber(4)
+  $core.bool hasBidButtonPath() => $_has(3);
+  @$pb.TagNumber(4)
+  void clearBidButtonPath() => clearField(4);
+}
+
 class Projects extends $pb.GeneratedMessage {
   static final $pb.BuilderInfo _i = $pb.BuilderInfo(const $core.bool.fromEnvironment('protobuf.omit_message_names') ? '' : 'Projects', package: const $pb.PackageName(const $core.bool.fromEnvironment('protobuf.omit_message_names') ? '' : 'auto_bidder_RPC'), createEmptyInstance: create)
     ..aOS(1, const $core.bool.fromEnvironment('protobuf.omit_field_names') ? '' : 'skills')

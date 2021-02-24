@@ -93,6 +93,19 @@ const ProjectInfo$json = const {
 
 /// Descriptor for `ProjectInfo`. Decode as a `google.protobuf.DescriptorProto`.
 final $typed_data.Uint8List projectInfoDescriptor = $convert.base64Decode('CgtQcm9qZWN0SW5mbxISCgRsaW5rGAEgASgJUgRsaW5rEhwKCWJpZEFtb3VudBgCIAEoCVIJYmlkQW1vdW50EigKD3Byb2plY3REZWxpdmVyeRgDIAEoCVIPcHJvamVjdERlbGl2ZXJ5Ei4KEnByb2plY3REZXNjcmlwdGlvbhgEIAEoCVIScHJvamVjdERlc2NyaXB0aW9uEiQKDWJpZEFtb3VudFBhdGgYBSABKAlSDWJpZEFtb3VudFBhdGgSMAoTcHJvamVjdERlbGl2ZXJ5UGF0aBgGIAEoCVITcHJvamVjdERlbGl2ZXJ5UGF0aBI2ChZwcm9qZWN0RGVzY3JpcHRpb25QYXRoGAcgASgJUhZwcm9qZWN0RGVzY3JpcHRpb25QYXRoEiQKDWJpZEJ1dHRvblBhdGgYCCABKAlSDWJpZEJ1dHRvblBhdGg=');
+@$core.Deprecated('Use projectPathInfoDescriptor instead')
+const ProjectPathInfo$json = const {
+  '1': 'ProjectPathInfo',
+  '2': const [
+    const {'1': 'bidAmountPath', '3': 1, '4': 1, '5': 9, '10': 'bidAmountPath'},
+    const {'1': 'projectDeliveryPath', '3': 2, '4': 1, '5': 9, '10': 'projectDeliveryPath'},
+    const {'1': 'projectDescriptionPath', '3': 3, '4': 1, '5': 9, '10': 'projectDescriptionPath'},
+    const {'1': 'bidButtonPath', '3': 4, '4': 1, '5': 9, '10': 'bidButtonPath'},
+  ],
+};
+
+/// Descriptor for `ProjectPathInfo`. Decode as a `google.protobuf.DescriptorProto`.
+final $typed_data.Uint8List projectPathInfoDescriptor = $convert.base64Decode('Cg9Qcm9qZWN0UGF0aEluZm8SJAoNYmlkQW1vdW50UGF0aBgBIAEoCVINYmlkQW1vdW50UGF0aBIwChNwcm9qZWN0RGVsaXZlcnlQYXRoGAIgASgJUhNwcm9qZWN0RGVsaXZlcnlQYXRoEjYKFnByb2plY3REZXNjcmlwdGlvblBhdGgYAyABKAlSFnByb2plY3REZXNjcmlwdGlvblBhdGgSJAoNYmlkQnV0dG9uUGF0aBgEIAEoCVINYmlkQnV0dG9uUGF0aA==');
 @$core.Deprecated('Use projectsDescriptor instead')
 const Projects$json = const {
   '1': 'Projects',
